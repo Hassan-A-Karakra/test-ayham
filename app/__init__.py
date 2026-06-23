@@ -1,0 +1,1 @@
+"""LRMIS FastAPI application package."""

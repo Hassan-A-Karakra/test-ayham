@@ -1,0 +1,110 @@
+{
+  "info": {
+    "name": "LRMIS",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "base_url", "value": "http://127.0.0.1:8000"},
+    {"key": "token", "value": ""},
+    {"key": "applicant_id", "value": ""},
+    {"key": "application_id", "value": ""}
+  ],
+  "item": [
+    {
+      "name": "Login Staff",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "url": "{{base_url}}/auth/login",
+        "body": {"mode": "raw", "raw": "{\"username\":\"staff\",\"password\":\"staff123\"}"}
+      }
+    },
+    {
+      "name": "Create Applicant",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "Authorization", "value": "Bearer {{token}}"}
+        ],
+        "url": "{{base_url}}/applicants/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"full_name\":\"Nour Ahmad\",\"applicant_type\":\"citizen\",\"identity\":{\"national_id\":\"400000001\",\"verified\":false},\"contacts\":{\"email\":\"nour@example.com\",\"phone\":\"+970599000000\"},\"address\":{\"city\":\"Ramallah\",\"zone_id\":\"ZONE-RM-01\"},\"verification_state\":\"unverified\",\"preferred_language\":\"ar\",\"notification_preferences\":{\"on_status_change\":true},\"privacy_settings\":{\"show_contact_to_staff\":true}}"
+        }
+      }
+    },
+    {
+      "name": "Create Application",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "Authorization", "value": "Bearer {{token}}"},
+          {"key": "Idempotency-Key", "value": "demo-application-001"}
+        ],
+        "url": "{{base_url}}/applications/",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"application_type\":\"ownership_transfer\",\"priority\":\"normal\",\"applicant_ref\":{\"applicant_id\":\"{{applicant_id}}\",\"applicant_type\":\"citizen\",\"submitted_by_representative\":false},\"parcel\":{\"parcel_number\":\"145\",\"block_number\":\"12\",\"basin_number\":\"3\",\"zone_id\":\"ZONE-RM-01\",\"area_sqm\":850.5,\"land_use\":\"residential\",\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[35.2001,31.9021],[35.2015,31.9021],[35.2015,31.903],[35.2001,31.903],[35.2001,31.9021]]]}},\"description\":\"Ownership transfer application.\",\"tags\":[\"ownership_transfer\"],\"required_documents\":[{\"document_type\":\"ownership_deed\",\"file_name\":\"deed.pdf\",\"required\":true,\"status\":\"uploaded\"},{\"document_type\":\"id_copy\",\"file_name\":\"id.pdf\",\"required\":true,\"status\":\"uploaded\"}]}"
+        }
+      }
+    },
+    {
+      "name": "List Applications",
+      "request": {
+        "method": "GET",
+        "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+        "url": "{{base_url}}/applications/?page=1&page_size=20"
+      }
+    },
+    {
+      "name": "Transition Application",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "Authorization", "value": "Bearer {{token}}"}
+        ],
+        "url": "{{base_url}}/applications/{{application_id}}/transition",
+        "body": {"mode": "raw", "raw": "{\"target_state\":\"pre_checked\",\"actor_type\":\"registrar\",\"actor_id\":\"staff\",\"notes\":\"Pre-check completed\",\"meta\":{}}"}
+      }
+    },
+    {
+      "name": "Create Surveyor",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "Authorization", "value": "Bearer {{token}}"}
+        ],
+        "url": "{{base_url}}/staff/",
+        "body": {"mode": "raw", "raw": "{\"staff_code\":\"SURV-RM-01\",\"name\":\"Survey Team A\",\"role\":\"surveyor\",\"department\":\"Cadastral Survey\",\"skills\":[\"boundary_survey\",\"gps_mapping\"],\"coverage\":{\"zone_ids\":[\"ZONE-RM-01\"]},\"schedule\":{\"timezone\":\"Asia/Hebron\"},\"workload\":{\"active_tasks\":0,\"max_tasks\":10},\"contacts\":{\"email\":\"survey@example.com\"},\"active\":true}"}
+      }
+    },
+    {
+      "name": "Auto Assign Surveyor",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+        "url": "{{base_url}}/applications/{{application_id}}/auto-assign-surveyor"
+      }
+    },
+    {
+      "name": "KPIs",
+      "request": {
+        "method": "GET",
+        "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+        "url": "{{base_url}}/analytics/kpis"
+      }
+    },
+    {
+      "name": "Parcel GeoJSON",
+      "request": {
+        "method": "GET",
+        "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+        "url": "{{base_url}}/analytics/geofeeds/parcels"
+      }
+    }
+  ]
+}
